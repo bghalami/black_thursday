@@ -9,9 +9,13 @@ class Merchant
     @name = hash[:name]
     @created_at = if hash[:created_at].class == String
                     Time.parse(hash[:created_at])
+                  else
+                    Time.now
                   end
     @updated_at = if hash[:created_at].class == String
                     Time.parse(hash[:created_at])
+                  else
+                    Time.now
                   end
   end
 end

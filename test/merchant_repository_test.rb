@@ -3,7 +3,11 @@ require_relative '../lib/merchant_repository'
 
 class MerchantRepositoryTest < Minitest::Test
   def setup
-    @merchant_repo = MerchantRepository.new('./data/merchants.csv')
+    @merchant1 = Merchant.new({id: 13, name: "Ben"})
+    @merchant2 = Merchant.new({id: 14, name: "Jesse"})
+    @merchant3 = Merchant.new({id: 15, name: "Sal"})
+    @merchant_array = [@merchant1, @merchant2, @merchant3]
+    @merchant_repo = MerchantRepository.new(@merchant_array)
   end
 
   def test_it_exists
@@ -23,32 +27,32 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_it_can_find_a_merchant_by_id
-    assert_equal @merchant_repo.merchants[0], @merchant_repo.find_by_id(12334105)
+    assert_equal @merchant_repo.merchants[0], @merchant_repo.find_by_id(13)
   end
 
   def test_it_can_find_a_merchant_by_name
-    assert_equal @merchant_repo.merchants[0], @merchant_repo.find_by_name("Shopin1901")
+    assert_equal @merchant_repo.merchants[0], @merchant_repo.find_by_name("Ben")
   end
 
   def test_it_find_all_by_name_fragment
-    assert_equal 26, @merchant_repo.find_all_by_name("shOp").count
+    assert_equal 2, @merchant_repo.find_all_by_name("e").count
   end
 
   def test_it_can_create_merchants
-    assert_equal 475, @merchant_repo.merchants.count
+    assert_equal 3, @merchant_repo.merchants.count
     @merchant_repo.create({:name => "Sour Creamery"})
-    assert_equal 476, @merchant_repo.merchants.count
+    assert_equal 4, @merchant_repo.merchants.count
   end
 
   def test_it_can_update_attributes
-    @merchant_repo.update(12334105, {:name => "Sour Creamery"})
-    sour_creamy = @merchant_repo.find_by_id(12334105)
+    @merchant_repo.update(13, {:name => "Sour Creamery"})
+    sour_creamy = @merchant_repo.find_by_id(13)
     assert_equal "Sour Creamery", sour_creamy.name
   end
 
   def test_it_can_delete_a_merchant
-    assert_instance_of Merchant, @merchant_repo.find_by_id(12334105)
-    @merchant_repo.delete(12334105)
-    assert_nil @merchant_repo.find_by_id(12334105)
+    assert_instance_of Merchant, @merchant_repo.find_by_id(13)
+    @merchant_repo.delete(13)
+    assert_nil @merchant_repo.find_by_id(13)
   end
 end
