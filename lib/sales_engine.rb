@@ -1,6 +1,7 @@
 require_relative '../lib/item_repository'
 require_relative '../lib/merchant_repository'
 require_relative '../lib/file_loader'
+require_relative '../lib/sales_analyst'
 require 'pry'
 
 class SalesEngine
@@ -38,5 +39,8 @@ class SalesEngine
     @merchants = MerchantRepository.new(merchants_array)
   end
 
+  def analyst
+    SalesAnalyst.new(@items, @merchants)
+  end
 
 end
