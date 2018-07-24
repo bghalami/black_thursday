@@ -56,6 +56,6 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_can_return_items_per_merchant_standard_deviation
-    assert_equal 0.71, @analyst.average_items_per_merchant_standard_deviation.round(2)
+    assert_equal 0.71, @analyst.average_items_per_merchant_standard_deviation
   end
 end
