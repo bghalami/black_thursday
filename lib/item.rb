@@ -1,7 +1,6 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
 require 'time'
-require 'pry'
 
 class Item
   attr_accessor :name,
