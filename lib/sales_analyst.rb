@@ -116,7 +116,7 @@ class SalesAnalyst
     count.compact
   end
 
-  def average_items_per_merchant
+  def average_invoices_per_merchant
     merchant_hash = invoices_by_merchant_id(@invoices.collection)
     invoice_count =  invoice_count_by_merchant_id(merchant_hash)
     (total_invoices(invoice_count).to_f / invoice_count.length).round(2)
