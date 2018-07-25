@@ -81,26 +81,38 @@ class SalesAnalyst
     (averages_summed / @merchants.merchants.count).round(2)
   end
 
-  # def price_average_standard_deviation
-  #   average_items = average_items_per_merchant
-  #   merchant_hash = items_by_merchant_id(@items.items)
-  #   item_count = item_count_by_merchant_id(merchant_hash)
-  #   abs_differences = item_count.map do |count|
-  #     ((count - average_items).abs) ** 2.0
-  #   end
-  #   total = abs_differences.inject(0) do |sum, number|
-  #     sum += number
-  #   end
-  #   (Math.sqrt(total / (item_count.length - 1))).round(2)
-  # end
   def total_item_price
     total = @items.items.inject(0) do |sum, item|
       sum += item.unit_price
     end
   end
 
-  def golden_items
-    average_price = total_item_price / @items.items.count
-    
+  def average_price
+    total_item_price / number_of_items
   end
+
+  def number_of_items
+    number_of_items = @items.items.count
+  end
+
+  def standard_deviation_of_item_prices
+    abs_differences = @items.items.map do |item|
+        ((item.unit_price - average_price).abs) ** 2.0
+    end
+    total = abs_differences.inject(0) do |sum, number|
+      sum += number
+    end
+    (Math.sqrt(total / (number_of_items - 1))).round(2)
+  end
+
+  def golden_items
+    the_mark = (standard_deviation_of_item_prices * 2) + average_price
+    count = @items.items.map do |item|
+      if (item.unit_price - the_mark) > 0
+        item
+      end
+    end
+    count.compact
+  end
+
 end

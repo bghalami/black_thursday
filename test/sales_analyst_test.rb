@@ -78,4 +78,13 @@ class SalesAnalystTest < Minitest::Test
   def test_it_returns_items_2_standard_deviations_above_item_average
     assert_equal [], @analyst.golden_items
   end
+
+  def test_it_returns_number_of_items
+    assert_equal 3, @analyst.number_of_items
+  end
+
+  def test_it_returns_the_standard_deviation_of_item_price
+    assert_equal 3.06, @analyst.standard_deviation_of_item_prices
+  end
+
 end
