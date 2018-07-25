@@ -77,6 +77,9 @@ module RepositoryHelper
       if attributes[:unit_price]
         class_instance.unit_price  = attributes[:unit_price]
       end
+      if attributes[:status]
+        class_instance.status  = attributes[:status]
+      end
       class_instance.updated_at = Time.now
     end
   end
