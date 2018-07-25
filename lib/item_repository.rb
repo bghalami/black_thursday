@@ -5,7 +5,7 @@ class ItemRepository
 
   include RepositoryHelper
 
-  attr_accessor :collection
+  attr_reader :collection
 
   def initialize(items = [])
     @collection = items

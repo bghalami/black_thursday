@@ -116,8 +116,27 @@ class SalesAnalyst
     count.compact
   end
 
-  def average_invoices_per_merchant
-
+  def average_items_per_merchant
+    merchant_hash = invoices_by_merchant_id(@invoices.collection)
+    invoice_count =  invoice_count_by_merchant_id(merchant_hash)
+    (total_invoices(invoice_count).to_f / invoice_count.length).round(2)
   end
 
+  def invoices_by_merchant_id(collection)
+    collection.group_by do |invoice|
+      invoice.merchant_id
+    end
+  end
+
+  def invoice_count_by_merchant_id(invoice_hash)
+    invoice_hash.map do |id, invoices|
+      invoices.count.to_f
+    end
+  end
+
+  def total_invoices(invoice_count_by_merchant_array)
+    invoice_count_by_merchant_array.inject(0) do |sum, number|
+      sum += number
+    end
+  end
 end
