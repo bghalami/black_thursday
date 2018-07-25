@@ -1,6 +1,4 @@
 require_relative '../lib/item'
-require 'csv'
-require 'pry'
 
 class ItemRepository
 

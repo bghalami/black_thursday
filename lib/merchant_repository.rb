@@ -8,7 +8,6 @@ class MerchantRepository
 
   def initialize(merchants_array = [])
       @merchants = merchants_array
-      # binding.pry
   end
 
   def all
