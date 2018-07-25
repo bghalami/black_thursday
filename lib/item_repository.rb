@@ -6,6 +6,7 @@ class ItemRepository
 
   def initialize(items = [])
       @items = items
+      @class = Item
   end
 
   def all
@@ -49,7 +50,7 @@ class ItemRepository
   end
 
   def create(attributes)
-    item = Item.new(attributes)
+    item = @class.new(attributes)
     item.id = find_max_id + 1
     item.created_at = Time.now
     @items << item
@@ -64,7 +65,7 @@ class ItemRepository
       if attributes[:description]
         item.description = attributes[:description]
       end
-      if item.unit_price = attributes[:unit_price]
+      if attributes[:unit_price]
         item.unit_price  = attributes[:unit_price]
       end
       item.updated_at = Time.now
