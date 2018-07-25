@@ -15,23 +15,23 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_it_has_somewhere_to_store_merchants
-    assert_instance_of Array, @merchant_repo.merchants
+    assert_instance_of Array, @merchant_repo.collection
   end
 
   def test_it_can_load_merchants_from_csv
-    refute @merchant_repo.merchants.empty?
+    refute @merchant_repo.collection.empty?
   end
 
   def test_it_can_return_all_merchants
-    assert_equal @merchant_repo.merchants, @merchant_repo.all
+    assert_equal @merchant_repo.collection, @merchant_repo.all
   end
 
   def test_it_can_find_a_merchant_by_id
-    assert_equal @merchant_repo.merchants[0], @merchant_repo.find_by_id(13)
+    assert_equal @merchant_repo.collection[0], @merchant_repo.find_by_id(13)
   end
 
   def test_it_can_find_a_merchant_by_name
-    assert_equal @merchant_repo.merchants[0], @merchant_repo.find_by_name("Ben")
+    assert_equal @merchant_repo.collection[0], @merchant_repo.find_by_name("Ben")
   end
 
   def test_it_find_all_by_name_fragment
@@ -39,9 +39,9 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_it_can_create_merchants
-    assert_equal 3, @merchant_repo.merchants.count
+    assert_equal 3, @merchant_repo.collection.count
     @merchant_repo.create({:name => "Sour Creamery"})
-    assert_equal 4, @merchant_repo.merchants.count
+    assert_equal 4, @merchant_repo.collection.count
   end
 
   def test_it_can_update_attributes

@@ -11,7 +11,7 @@ class SalesEngineTest < Minitest::Test
   end
 
   def test_it_has_attributes
-    assert_equal [], @sales_engine.items.items
-    assert_equal [], @sales_engine.merchants.merchants
+    assert_equal [], @sales_engine.items.collection
+    assert_equal [], @sales_engine.merchants.collection
   end
 end

@@ -24,7 +24,13 @@ module RepositoryHelper
 
   def find_all_with_description(description)
     @collection.find_all do |element|
-      element.description.upcase.include?(desription.upcase)
+      element.description.upcase.include?(description.upcase)
+    end
+  end
+
+  def find_all_by_status(status)
+    @collection.find_all do |element|
+      element.status.upcase.include?(status.upcase)
     end
   end
 
@@ -43,6 +49,12 @@ module RepositoryHelper
   def find_all_by_merchant_id(id)
     @collection.find_all do |element|
       element.merchant_id == id
+    end
+  end
+
+  def find_all_by_customer_id(id)
+    @collection.find_all do |element|
+      element.customer_id == id
     end
   end
 

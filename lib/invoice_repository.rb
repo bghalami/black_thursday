@@ -1,39 +1,14 @@
 require_relative '../lib/invoice'
+require_relative '../lib/repository_helper'
 
 class InvoiceRepository
 
-  attr_reader :invoices
+  include RepositoryHelper
+
+  attr_reader :collection
 
   def initialize(invoices = [])
-    @invoices = invoices
+    @collection = invoices
+    @class = Invoice
   end
-
-  def all
-    @invoices
-  end
-
-  def find_by_id(id)
-    @invoices.find do |invoice|
-      invoice.id == id
-    end
-  end
-
-  def find_all_by_customer_id(id)
-    @invoices.find_all do |invoice|
-      invoice.customer_id == id
-    end
-  end
-
-  def find_all_by_merchant_id(id)
-    @invoices.find_all do |invoice|
-      invoice.merchant_id == id
-    end
-  end
-
-  def find_all_by_status(status)
-    @invoices.find_all do |invoice|
-      invoice.status.upcase.include?(status.upcase)
-    end
-  end
-
 end
