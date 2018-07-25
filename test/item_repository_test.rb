@@ -34,9 +34,9 @@ class ItemRepositoryTest < Minitest::Test
       :merchant_id => "15"
       })
 
-      @item_repo.items << @item_1
-      @item_repo.items << @item_2
-      @item_repo.items << @item_3
+      @item_repo.collection << @item_1
+      @item_repo.collection << @item_2
+      @item_repo.collection << @item_3
 
   end
 
@@ -45,19 +45,19 @@ class ItemRepositoryTest < Minitest::Test
   end
 
   def test_it_has_somewhere_to_store_items
-    assert_instance_of Array, @item_repo.items
+    assert_instance_of Array, @item_repo.collection
   end
 
   def test_it_can_return_all_items
-    assert_equal @item_repo.items, @item_repo.all
+    assert_equal @item_repo.collection, @item_repo.all
   end
 
   def test_it_can_find_an_item_by_id
-    assert_equal @item_repo.items[0], @item_repo.find_by_id(263395237)
+    assert_equal @item_repo.collection[0], @item_repo.find_by_id(263395237)
   end
 
   def test_it_can_find_item_by_name_regardless_of_case
-    assert_equal @item_repo.items[0], @item_repo.find_by_name("pencil")
+    assert_equal @item_repo.collection[0], @item_repo.find_by_name("pencil")
   end
 
   def test_it_can_find_all_by_description
@@ -79,7 +79,7 @@ class ItemRepositoryTest < Minitest::Test
   end
 
   def test_it_can_create_a_new_item
-    assert_equal 3, @item_repo.items.count
+    assert_equal 3, @item_repo.collection.count
     @item_repo.create({
       :name        => "Mechanical Pencil",
       :description => "You can use it to write mechanical things.",
@@ -88,7 +88,7 @@ class ItemRepositoryTest < Minitest::Test
       :updated_at  => Time.now,
       :merchant_id => "35"
     })
-    assert_equal 4, @item_repo.items.count
+    assert_equal 4, @item_repo.collection.count
   end
 
   def test_it_can_update_attributes

@@ -40,10 +40,10 @@ class InvoiceRepositoryTest < Minitest::Test
 
 
 
-    @invoice_repo.invoices << @invoice_1
-    @invoice_repo.invoices << @invoice_2
-    @invoice_repo.invoices << @invoice_3
-    @invoice_repo.invoices << @invoice_4
+    @invoice_repo.collection << @invoice_1
+    @invoice_repo.collection << @invoice_2
+    @invoice_repo.collection << @invoice_3
+    @invoice_repo.collection << @invoice_4
 
   end
 
@@ -56,8 +56,8 @@ class InvoiceRepositoryTest < Minitest::Test
   end
 
   def test_it_can_find_by_id
-    assert_equal @invoice_repo.invoices[2], @invoice_repo.find_by_id(19)
-    assert_equal @invoice_repo.invoices[0], @invoice_repo.find_by_id(6)
+    assert_equal @invoice_repo.collection[2], @invoice_repo.find_by_id(19)
+    assert_equal @invoice_repo.collection[0], @invoice_repo.find_by_id(6)
     refute @invoice_repo.find_by_id(99)
   end
 

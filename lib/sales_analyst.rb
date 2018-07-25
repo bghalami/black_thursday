@@ -5,9 +5,10 @@ class SalesAnalyst
   attr_reader :items,
               :merchants
 
-  def initialize(items, merchants)
+  def initialize(items, merchants, invoices)
     @items = items
     @merchants = merchants
+    @invoices = invoices
   end
 
   def items_by_merchant_id(item_array)
@@ -29,14 +30,14 @@ class SalesAnalyst
   end
 
   def average_items_per_merchant
-    merchant_hash = items_by_merchant_id(@items.items)
+    merchant_hash = items_by_merchant_id(@items.collection)
     item_count = item_count_by_merchant_id(merchant_hash)
     (total_items(item_count).to_f / item_count.length).round(2)
   end
 
   def average_items_per_merchant_standard_deviation
     average_items = average_items_per_merchant
-    merchant_hash = items_by_merchant_id(@items.items)
+    merchant_hash = items_by_merchant_id(@items.collection)
     item_count = item_count_by_merchant_id(merchant_hash)
     abs_differences = item_count.map do |count|
       ((count - average_items).abs) ** 2.0
@@ -49,8 +50,8 @@ class SalesAnalyst
 
   def merchants_with_high_item_count
     the_mark = average_items_per_merchant + average_items_per_merchant_standard_deviation
-    merchant_hash = items_by_merchant_id(@items.items)
-    split = @merchants.merchants.map do |merchant|
+    merchant_hash = items_by_merchant_id(@items.collection)
+    split = @merchants.collection.map do |merchant|
       if merchant_hash[merchant.id]
         if ((merchant_hash[merchant.id]).count - the_mark) >= 0
           merchant
@@ -71,18 +72,18 @@ class SalesAnalyst
   end
 
   def average_average_price_per_merchant
-    merchant_hash = items_by_merchant_id(@items.items)
+    merchant_hash = items_by_merchant_id(@items.collection)
     average_merchant_average = merchant_hash.map do |merchant_id, items|
         average_item_price_for_merchant(merchant_id)
     end
     averages_summed = average_merchant_average.inject(0) do |sum, bigd|
       sum += bigd
     end
-    (averages_summed / @merchants.merchants.count).round(2)
+    (averages_summed / @merchants.collection.count).round(2)
   end
 
   def total_item_price
-    total = @items.items.inject(0) do |sum, item|
+    total = @items.collection.inject(0) do |sum, item|
       sum += item.unit_price
     end
   end
@@ -92,11 +93,11 @@ class SalesAnalyst
   end
 
   def number_of_items
-    number_of_items = @items.items.count
+    number_of_items = @items.collection.count
   end
 
   def standard_deviation_of_item_prices
-    abs_differences = @items.items.map do |item|
+    abs_differences = @items.collection.map do |item|
         ((item.unit_price - average_price).abs) ** 2.0
     end
     total = abs_differences.inject(0) do |sum, number|
@@ -107,12 +108,16 @@ class SalesAnalyst
 
   def golden_items
     the_mark = (standard_deviation_of_item_prices * 2) + average_price
-    count = @items.items.map do |item|
+    count = @items.collection.map do |item|
       if (item.unit_price - the_mark) > 0
         item
       end
     end
     count.compact
+  end
+
+  def average_invoices_per_merchant
+
   end
 
 end
