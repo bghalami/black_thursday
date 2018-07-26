@@ -6,6 +6,82 @@ require 'pry'
 class SalesAnalystTest < Minitest::Test
 
   def setup
+    @t_1 = Transaction.new({
+      :id => 6,
+      :invoice_id => 8,
+      :credit_card_number => "4242424242424242",
+      :credit_card_expiration_date => "0221",
+      :result => "success",
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @t_2 = Transaction.new({
+      :id => 7,
+      :invoice_id => 9,
+      :credit_card_number => "4242424242424243",
+      :credit_card_expiration_date => "0222",
+      :result => "success",
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @t_3 = Transaction.new({
+      :id => 8,
+      :invoice_id => 9,
+      :credit_card_number => "4242424242424244",
+      :credit_card_expiration_date => "0223",
+      :result => "failed",
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @t_4 = Transaction.new({
+      :id => 9,
+      :invoice_id => 11,
+      :credit_card_number => "4242424242424245",
+      :credit_card_expiration_date => "0224",
+      :result => "success",
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @transactions_array = [@t_1, @t_2, @t_3, @t_4]
+
+    @ii_1 = InvoiceItem.new({
+      :id => 6,
+      :item_id => 7,
+      :invoice_id => 8,
+      :quantity => 1,
+      :unit_price => BigDecimal.new(10.99, 4),
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @ii_2 = InvoiceItem.new({
+      :id => 7,
+      :item_id => 8,
+      :invoice_id => 9,
+      :quantity => 2,
+      :unit_price => BigDecimal.new(99.99, 4),
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @ii_3 = InvoiceItem.new({
+      :id => 8,
+      :item_id => 11,
+      :invoice_id => 9,
+      :quantity => 1,
+      :unit_price => BigDecimal.new(5.99, 3),
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @ii_4 = InvoiceItem.new({
+      :id => 9,
+      :item_id => 10,
+      :invoice_id => 8,
+      :quantity => 10,
+      :unit_price => BigDecimal.new(10.99, 4),
+      :created_at => Time.now,
+      :updated_at => Time.now
+    })
+    @invoice_item_array = [@ii_3, @ii_1, @ii_2, @ii_4]
+
     @invoice_1 = Invoice.new({
       :id          => 6,
       :customer_id => 7,
@@ -82,7 +158,9 @@ class SalesAnalystTest < Minitest::Test
 
     @merchant_array = [@merchant1, @merchant2, @merchant3]
 
-    @sales_engine = SalesEngine.new(@item_array, @merchant_array, @invoice_array)
+    @customer_array = []
+
+    @sales_engine = SalesEngine.new(@item_array, @merchant_array, @invoice_array, @customer_array, @transactions_array, @invoice_item_array)
     @analyst = @sales_engine.analyst
   end
 
@@ -181,4 +259,11 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 50.0, @analyst.invoice_status(:pending)
   end
 
+  def test_invoice_paid_in_full_returns_true_if_status_is_success
+    assert_equal false, @analyst.invoice_paid_in_full?(9)
+  end
+
+  def test_invoice_total_returns_correct_big_d
+    assert_equal BigDecimal.new(205.97, 5), @analyst.invoice_total(9)
+  end
 end
