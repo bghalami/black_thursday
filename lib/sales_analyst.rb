@@ -84,7 +84,7 @@ class SalesAnalyst
   end
 
   def total_item_price
-    total = @items.collection.inject(0) do |sum, item|
+    @items.collection.inject(0) do |sum, item|
       sum += item.unit_price
     end
   end
@@ -94,7 +94,7 @@ class SalesAnalyst
   end
 
   def number_of_items
-    number_of_items = @items.collection.count
+    @items.collection.count
   end
 
   def standard_deviation_of_item_prices
@@ -110,7 +110,7 @@ class SalesAnalyst
   def golden_items
     the_mark = (standard_deviation_of_item_prices * 2) + average_price
     count = @items.collection.map do |item|
-      if (item.unit_price - the_mark) > 0
+      if item.unit_price > the_mark
         item
       end
     end
@@ -154,19 +154,111 @@ class SalesAnalyst
   end
 
   def top_merchants_by_invoice_count
+    merchant_hash = invoices_by_merchant_id(@invoices.collection)
+    the_mark = (average_invoices_per_merchant_standard_deviation * 2) + average_invoices_per_merchant
 
+    count = merchant_hash.map do |merchant_id, count|
+      if count.length > the_mark
+        @merchants.find_by_id(merchant_id)
+      end
+    end
+    count.compact
   end
 
   def bottom_merchants_by_invoice_count
+    merchant_hash = invoices_by_merchant_id(@invoices.collection)
+    the_mark = average_invoices_per_merchant - (average_invoices_per_merchant_standard_deviation * 2)
 
+    count = merchant_hash.map do |merchant_id, count|
+      if count.length < the_mark
+        @merchants.find_by_id(merchant_id)
+      end
+    end
+    count.compact
+  end
+
+  def day_of_the_week_hash
+    @invoices.collection.group_by do |invoice|
+      (invoice.created_at).wday
+    end
+  end
+
+  def count_per_day
+    day_of_the_week_hash.map do |day, invoices|
+      invoices.count
+    end
+  end
+
+  def invoice_count_per_day_summed
+    count_per_day.inject(0) do |sum, count|
+      sum += count
+    end
+  end
+
+  def average_number_of_invoices_created_per_day
+    (invoice_count_per_day_summed.to_f / 7).round(2)
   end
 
   def top_days_by_invoice_count
+    count_per_day = day_of_the_week_hash.map do |day, invoices|
+      invoices.count
+    end
+  end
 
+  def invoice_per_day_standard_deviation
+    average = average_number_of_invoices_created_per_day
+    abs_differences = count_per_day.map do |count|
+        ((count - average).abs) ** 2.0
+    end
+    total = abs_differences.inject(0) do |sum, number|
+      sum += number
+    end
+    (Math.sqrt(total / 6)).round(2)
+  end
+
+  def weekify(day_of_week_int)
+    if day_of_week_int == 0
+      "Sunday"
+    elsif day_of_week_int == 1
+      "Monday"
+    elsif day_of_week_int == 2
+      "Tuesday"
+    elsif day_of_week_int == 3
+      "Wednesday"
+    elsif day_of_week_int == 4
+      "Thursday"
+    elsif day_of_week_int == 5
+      "Friday"
+    elsif day_of_week_int == 6
+      "Saturday"
+    else
+      ""
+    end
+  end
+
+  def top_days_by_invoice_count
+    the_mark = average_number_of_invoices_created_per_day + invoice_per_day_standard_deviation
+    day_hash = day_of_the_week_hash
+    days = day_hash.map do |day, count|
+      if count.length > the_mark
+        day
+      end
+    end
+    (days.compact).map do |day|
+      weekify(day)
+    end
+  end
+
+  def group_by_invoice_status
+    @invoices.collection.group_by do |invoice|
+      invoice.status
+    end
   end
 
   def invoice_status(status)
-
+    status_count = group_by_invoice_status[status].count
+    total_invoices = @invoices.collection.count
+    ((status_count.to_f / total_invoices) * 100).round(2)
   end
 
 end
