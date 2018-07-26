@@ -86,6 +86,12 @@ module RepositoryHelper
       if attributes[:status]
         class_instance.status  = attributes[:status]
       end
+      if attributes[:quantity]
+        class_instance.quantity  = attributes[:quantity]
+      end
+      if attributes[:result]
+        class_instance.result  = attributes[:result]
+      end
       class_instance.updated_at = Time.now
     end
   end
@@ -100,6 +106,12 @@ module RepositoryHelper
   def delete(id)
     element = find_by_id(id)
     @collection.delete(element)
+  end
+
+  def find_all_by_invoice_id(id)
+    @collection.find_all do |element|
+      element.invoice_id == id
+    end
   end
 
   def inspect

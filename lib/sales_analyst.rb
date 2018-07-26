@@ -5,13 +5,17 @@ class SalesAnalyst
   attr_reader :items,
               :merchants,
               :invoices,
-              :customers
+              :customers,
+              :invoice_items,
+              :transactions
 
-  def initialize(items, merchants, invoices, customers)
+  def initialize(items, merchants, invoices, customers, transactions, invoice_items)
     @items = items
     @merchants = merchants
     @invoices = invoices
     @customers = customers
+    @transactions = transactions
+    @invoice_items = invoice_items
   end
 
   def items_by_merchant_id(item_array)
@@ -262,5 +266,7 @@ class SalesAnalyst
     total_invoices = @invoices.collection.count
     ((status_count.to_f / total_invoices) * 100).round(2)
   end
+
+  def
 
 end
