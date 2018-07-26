@@ -4,12 +4,14 @@ class SalesAnalyst
 
   attr_reader :items,
               :merchants,
-              :invoices
+              :invoices,
+              :customers
 
-  def initialize(items, merchants, invoices)
+  def initialize(items, merchants, invoices, customers)
     @items = items
     @merchants = merchants
     @invoices = invoices
+    @customers = customers
   end
 
   def items_by_merchant_id(item_array)

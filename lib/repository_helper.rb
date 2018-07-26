@@ -71,6 +71,12 @@ module RepositoryHelper
       if attributes[:name]
         class_instance.name = attributes[:name]
       end
+      if attributes[:first_name]
+        class_instance.first_name = attributes[:first_name]
+      end
+      if attributes[:last_name]
+        class_instance.last_name = attributes[:last_name]
+      end
       if attributes[:description]
         class_instance.description = attributes[:description]
       end
