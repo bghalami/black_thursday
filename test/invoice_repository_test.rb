@@ -1,6 +1,5 @@
 require_relative '../test/test_helper.rb'
 require_relative '../lib/invoice_repository'
-require 'pry'
 
 class InvoiceRepositoryTest < Minitest::Test
   def setup
@@ -37,9 +36,6 @@ class InvoiceRepositoryTest < Minitest::Test
       :created_at  => Time.now,
       :updated_at  => Time.now
     })
-
-
-
     @invoice_repo.collection << @invoice_1
     @invoice_repo.collection << @invoice_2
     @invoice_repo.collection << @invoice_3

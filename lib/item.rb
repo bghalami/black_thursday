@@ -37,10 +37,4 @@ class Item
   def unit_price_to_dollars
     @unit_price.to_f
   end
-
-  # def convert_to_big_decimal
-  #   float_price = @unit_price.to_f/100
-  #   # price_as_integer = @unit_price.to_i
-  #   @unit_price = BigDecimal(float_price, @unit_price.length)
-  # end
 end
