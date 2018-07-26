@@ -6,6 +6,44 @@ require 'pry'
 class SalesAnalystTest < Minitest::Test
 
   def setup
+    @invoice_1 = Invoice.new({
+      :id          => 6,
+      :customer_id => 7,
+      :merchant_id => 8,
+      :status      => "pending",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_2 = Invoice.new({
+      :id          => 7,
+      :customer_id => 7,
+      :merchant_id => 8,
+      :status      => "pending",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_3 = Invoice.new({
+      :id          => 8,
+      :customer_id => 6,
+      :merchant_id => 13,
+      :status      => "shipped",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_4 = Invoice.new({
+      :id          => 9,
+      :customer_id => 6,
+      :merchant_id => 13,
+      :status      => "returned",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_array = [@invoice_1, @invoice_2, @invoice_3, @invoice_4]
+
     @item_1 = Item.new({
       :id          => "263395237",
       :name        => "Pencil",
@@ -43,7 +81,8 @@ class SalesAnalystTest < Minitest::Test
     @merchant3 = Merchant.new({id: 15, name: "Jesse"})
 
     @merchant_array = [@merchant1, @merchant2, @merchant3]
-    @sales_engine = SalesEngine.new(@item_array, @merchant_array)
+
+    @sales_engine = SalesEngine.new(@item_array, @merchant_array, @invoice_array)
     @analyst = @sales_engine.analyst
   end
 
@@ -85,6 +124,61 @@ class SalesAnalystTest < Minitest::Test
 
   def test_it_returns_the_standard_deviation_of_item_price
     assert_equal 3.06, @analyst.standard_deviation_of_item_prices
+  end
+
+  def test_it_returns_golden_items
+    assert_equal [], @analyst.golden_items
+  end
+
+  def test_it_returns_average_invoices_per_merchant
+    assert_equal 2, @analyst.average_invoices_per_merchant
+  end
+
+  def test_it_groups_invoices_by_merchant_id
+    actual    = @analyst.invoices_by_merchant_id(@analyst.invoices.collection)
+    expected  = {13 => [@invoice_3,@invoice_4], 8 => [@invoice_1, @invoice_2]}
+    assert_equal expected, actual
+
+  end
+
+  def test_it_gives_us_the_invoice_per_merchant_standard_deviation
+    assert_equal 0, @analyst.average_invoices_per_merchant_standard_deviation
+  end
+
+  def test_it_returns_array_of_top_merchants_by_invoice_count
+    assert_equal [], @analyst.top_merchants_by_invoice_count
+  end
+
+  def test_it_returns_an_array_of_bottom_merchants_by_invoice_count
+    assert_equal [], @analyst.bottom_merchants_by_invoice_count
+  end
+
+  def test_it_returns_day_of_the_week_hash
+    assert_equal ({3 => @invoice_array}), @analyst.day_of_the_week_hash
+  end
+
+  def test_it_returns_an_integer_of_counts_per_day
+    assert_equal 4, @analyst.invoice_count_per_day_summed
+  end
+
+  def test_average_number_of_invoices_created_per_day
+    assert_equal 0.57, @analyst.average_number_of_invoices_created_per_day
+  end
+
+  def test_it_returns_array_of_top_days_of_invoices
+    assert_equal ["Wednesday"], @analyst.top_days_by_invoice_count
+  end
+
+  def test_it_returns_the_standard_deviation_of_invoice_items_created_per_day
+    assert_equal 1.4, @analyst.invoice_per_day_standard_deviation
+  end
+
+  def test_it_returns_hash_of_grouped_invoices
+    assert_instance_of Hash, @analyst.group_by_invoice_status
+  end
+
+  def test_it_returns_the_percentage_of_invoices_with_status
+    assert_equal 50.0, @analyst.invoice_status(:pending)
   end
 
 end
