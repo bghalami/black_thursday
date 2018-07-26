@@ -14,20 +14,6 @@ class ItemTest < Minitest::Test
     })
   end
 
-  # def test_it_can_keep_track_of_greatest_item_id
-  #   assert_equal 263567474, Item.greatest_id
-  #   item_2 = Item.new({
-  #     :id          => 263567475,
-  #     :name        => "Pencil",
-  #     :description => "You can use it to write things.",
-  #     :unit_price  => BigDecimal.new(10.99, 4),
-  #     :created_at  => Time.now,
-  #     :updated_at  => Time.now,
-  #     :merchant_id => 1234566
-  #   })
-  #   assert_equal 263567475, Item.greatest_id
-  # end
-
   def test_it_exists
     assert_instance_of Item, @item
   end
