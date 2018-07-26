@@ -267,4 +267,6 @@ class SalesAnalyst
     ((status_count.to_f / total_invoices) * 100).round(2)
   end
 
+  def
+
 end
