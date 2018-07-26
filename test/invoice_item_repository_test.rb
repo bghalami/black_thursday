@@ -23,7 +23,7 @@ class InvoiceItemRepositoryTest < Minitest::Test
       :created_at => Time.now,
       :updated_at => Time.now
     })
-    @ii_2 = InvoiceItem.new({
+    @ii_3 = InvoiceItem.new({
       :id => 8,
       :item_id => 11,
       :invoice_id => 11,

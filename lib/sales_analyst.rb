@@ -267,6 +267,30 @@ class SalesAnalyst
     ((status_count.to_f / total_invoices) * 100).round(2)
   end
 
-  def
+  def invoice_paid_in_full?(invoice_id)
+    transactions = @transactions.find_all_by_invoice_id(invoice_id)
+    if transactions == []
+      false
+    else
+      transactions.all? do |transaction|
+        if transaction.result == :success
+          true
+        else
+          false
+        end
+      end
+    end
+  end
+
+  def invoice_total(invoice_ide)
+    invoice_items = @invoice_items.find_all_by_invoice_id(invoice_ide)
+    prices = invoice_items.map do |invoice_item|
+      invoice_item.unit_price * invoice_item.quantity
+    end
+    total_price = prices.inject do |sum, number|
+      sum + number
+    end
+    total_price.round(2)
+  end
 
 end
