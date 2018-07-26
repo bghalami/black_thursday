@@ -3,7 +3,8 @@ require 'pry'
 class SalesAnalyst
 
   attr_reader :items,
-              :merchants
+              :merchants,
+              :invoices
 
   def initialize(items, merchants, invoices)
     @items = items
@@ -139,4 +140,33 @@ class SalesAnalyst
       sum += number
     end
   end
+
+  def average_invoices_per_merchant_standard_deviation
+    merchant_hash = invoices_by_merchant_id(@invoices.collection)
+    invoice_count = invoice_count_by_merchant_id(merchant_hash)
+    abs_differences = invoice_count.map do |count|
+        ((count - average_invoices_per_merchant).abs) ** 2.0
+    end
+    total = abs_differences.inject(0) do |sum, number|
+      sum += number
+    end
+    (Math.sqrt(total / (invoice_count.count - 1))).round(2)
+  end
+
+  def top_merchants_by_invoice_count
+
+  end
+
+  def bottom_merchants_by_invoice_count
+
+  end
+
+  def top_days_by_invoice_count
+
+  end
+
+  def invoice_status(status)
+
+  end
+
 end

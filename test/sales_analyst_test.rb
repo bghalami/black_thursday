@@ -6,6 +6,44 @@ require 'pry'
 class SalesAnalystTest < Minitest::Test
 
   def setup
+    @invoice_1 = Invoice.new({
+      :id          => 6,
+      :customer_id => 7,
+      :merchant_id => 8,
+      :status      => "pending",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_2 = Invoice.new({
+      :id          => 7,
+      :customer_id => 7,
+      :merchant_id => 8,
+      :status      => "pending",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_3 = Invoice.new({
+      :id          => 8,
+      :customer_id => 6,
+      :merchant_id => 13,
+      :status      => "pending",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_4 = Invoice.new({
+      :id          => 9,
+      :customer_id => 6,
+      :merchant_id => 13,
+      :status      => "pending",
+      :created_at  => Time.now,
+      :updated_at  => Time.now,
+    })
+
+    @invoice_array = [@invoice_1, @invoice_2, @invoice_3, @invoice_4]
+
     @item_1 = Item.new({
       :id          => "263395237",
       :name        => "Pencil",
@@ -43,7 +81,8 @@ class SalesAnalystTest < Minitest::Test
     @merchant3 = Merchant.new({id: 15, name: "Jesse"})
 
     @merchant_array = [@merchant1, @merchant2, @merchant3]
-    @sales_engine = SalesEngine.new(@item_array, @merchant_array)
+
+    @sales_engine = SalesEngine.new(@item_array, @merchant_array, @invoice_array)
     @analyst = @sales_engine.analyst
   end
 
@@ -85,6 +124,14 @@ class SalesAnalystTest < Minitest::Test
 
   def test_it_returns_the_standard_deviation_of_item_price
     assert_equal 3.06, @analyst.standard_deviation_of_item_prices
+  end
+
+  def test_it_returns_golden_items
+    assert_equal [], @analyst.golden_items
+  end
+
+  def test_it_returns_average_invoices_per_merchant
+    assert_equal 2, @analyst.average_invoices_per_merchant
   end
 
 end
