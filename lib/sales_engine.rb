@@ -46,13 +46,13 @@ class SalesEngine
 
   def initialize(items_array = [],
                  merchants_array = [],
-                 invoice_array = []
+                 invoice_array = [],
                  customers_array = [])
 
     @items     = ItemRepository.new(items_array)
     @merchants = MerchantRepository.new(merchants_array)
     @invoices  = InvoiceRepository.new(invoice_array)
-    @customers = CustomerRepository.new(customer_array)
+    @customers = CustomerRepository.new(customers_array)
   end
 
   def analyst
