@@ -327,21 +327,69 @@ class SalesAnalyst
 
   def revenue_by_merchant(merchant_id)
     invoices = @invoices.find_all_by_merchant_id(merchant_id)
-    invoices_items = invoices.map do |invoice|
+    invoice_item_total = invoices.map do |invoice|
       invoice_total(invoice.id)
     end
-    total = invoices_items.inject(0) do |sum, num|
+    total = invoice_item_total.inject(0) do |sum, num|
       sum += num
     end
     total.round(2)
   end
 
   def most_sold_item_for_merchant(merchant_id)
+    invoices = @invoices.find_all_by_merchant_id(merchant_id)
+    invoice_items = invoices.map do |invoice|
+      @invoice_items.find_all_by_invoice_id(invoice.id)
+    end.flatten
+
+    grouped_items = invoice_items.group_by do |invoice_item|
+      invoice_item.item_id
+    end
+
+    qty_items = grouped_items.map do |item_id, invoice_items|
+      [item_id, invoice_items.inject(0) do |sum, invoice_item|
+        sum += invoice_item.quantity
+      end ]
+    end
+
+    qty = qty_items.sort_by do |item_id, quantity|
+      quantity
+    end
+
+    final = qty.map do |item_id, quantity|
+      if quantity == qty[-1][1]
+        @items.find_by_id(item_id)
+      else
+        next
+      end
+    end
+    final.compact
+    binding.pry
 
   end
 
   def best_item_for_merchant(merchant_id)
-    
+    invoices = @invoices.find_all_by_merchant_id(merchant_id)
+
+    invoice_items = invoices.map do |invoice|
+      @invoice_items.find_all_by_invoice_id(invoice.id)
+    end.flatten
+
+    grouped_items = invoice_items.group_by do |invoice_item|
+      invoice_item.item_id
+    end
+
+    qty_items = grouped_items.map do |item_id, invoice_items|
+      [item_id, invoice_items.inject(0) do |sum, invoice_item|
+        sum += (invoice_item.quantity * invoice_item.unit_price)
+      end ]
+    end
+
+    qty = qty_items.sort_by do |item_id, quantity|
+      quantity
+    end
+
+    @items.find_by_id(qty[-1][0])
   end
 
 end

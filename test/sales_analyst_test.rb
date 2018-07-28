@@ -278,4 +278,13 @@ class SalesAnalystTest < Minitest::Test
   def test_it_can_return_the_total_revenue_of_a_merchant
     assert_equal 326.86.to_d, @analyst.revenue_by_merchant(13)
   end
+
+  def test_it_returns_an_array_of_the_highest_quanitity_item
+    assert_equal [], @analyst.most_sold_item_for_merchant(13)
+  end
+
+  def test_it_returns_best_item_for_merchant_per_revenue
+    assert_equal , @analyst.best_item_for_merchant(13)
+
+  end
 end
