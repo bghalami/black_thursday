@@ -321,12 +321,19 @@ class SalesAnalyst
 
     merchants = merchants_with_only_one_item.group_by do |merchants|
                   (merchants.created_at).month
-                end 
+                end
     merchants[month_number]
   end
 
   def revenue_by_merchant(merchant_id)
-
+    invoices = @invoices.find_all_by_merchant_id(merchant_id)
+    invoices_items = invoices.map do |invoice|
+      invoice_total(invoice.id)
+    end
+    total = invoices_items.inject(0) do |sum, num|
+      sum += num
+    end
+    total.round(2)
   end
 
   def most_sold_item_for_merchant(merchant_id)
@@ -334,7 +341,7 @@ class SalesAnalyst
   end
 
   def best_item_for_merchant(merchant_id)
-
+    
   end
 
 end
