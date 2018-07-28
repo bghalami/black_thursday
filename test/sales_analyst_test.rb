@@ -267,7 +267,11 @@ class SalesAnalystTest < Minitest::Test
     assert_equal BigDecimal.new(205.97, 5), @analyst.invoice_total(9)
   end
 
-  def test_it_return_array_of_merchants_with_only_one_invoice_that_month
+  def test_it_returns_merchant_with_one_item
+    assert_equal 1, @analyst.merchants_with_only_one_item.count
+  end
 
+  def test_it_return_array_of_merchants_with_only_one_invoice_that_month
+    assert_equal 1, @analyst.merchants_with_only_one_item_registered_in_month("July").count
   end
 end

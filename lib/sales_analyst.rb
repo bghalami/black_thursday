@@ -289,6 +289,18 @@ class SalesAnalyst
     total_price.round(2)
   end
 
+  def merchants_with_only_one_item
+    items_by_merchant = @items.collection.group_by do |item|
+      item.merchant_id
+    end
+    merchants_with_one = items_by_merchant.select do |merchant_id, items|
+      items.length == 1
+    end
+    final_merchants = merchants_with_one.map do |merchant_id, items|
+      @merchants.find_by_id(merchant_id)
+    end
+  end
+
   def merchants_with_only_one_item_registered_in_month(month_name)
     month_name_hash = {
       "January" => 1,
@@ -307,30 +319,10 @@ class SalesAnalyst
 
     month_number = month_name_hash[month_name]
 
-    created_same = @merchants.collection.select do |merchant|
-      (merchant.created_at).month == month_number
-    end
-
-    invoices_in_month = @invoices.collection.select do |invoice|
-      (invoice.created_at).month == month_number
-    end
-
-    invoices_per_merchant = invoices_in_month.group_by do |invoice|
-      invoice.merchant_id
-    end
-
-    single_merchant = invoices_per_merchant.select do |merchant_id, invoices|
-      invoices.length == 1
-    end
-    single_merchant = (single_merchant.values).flatten
-    single_merchant = single_merchant.map do |invoice|
-      @merchants.find_by_id(invoice.merchant_id)
-    end
-
-    sim = created_same.select do |merchant|
-      single_merchant.include?(merchant)
-    end
-
+    merchants = merchants_with_only_one_item.group_by do |merchants|
+                  (merchants.created_at).month
+                end 
+    merchants[month_number]
   end
 
   def revenue_by_merchant(merchant_id)
