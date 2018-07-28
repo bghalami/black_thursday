@@ -269,16 +269,12 @@ class SalesAnalyst
 
   def invoice_paid_in_full?(invoice_id)
     transactions = @transactions.find_all_by_invoice_id(invoice_id)
-    if transactions == []
-      false
-    else
+    if transactions != []
       transactions.all? do |transaction|
-        if transaction.result == :success
-          true
-        else
-          false
-        end
+        transaction.result == :success
       end
+    else
+      false
     end
   end
 
@@ -291,6 +287,62 @@ class SalesAnalyst
       sum + number
     end
     total_price.round(2)
+  end
+
+  def merchants_with_only_one_item_registered_in_month(month_name)
+    month_name_hash = {
+      "January" => 1,
+      "February" => 2,
+      "March" => 3,
+      "April" => 4,
+      "May" => 5,
+      "June" => 6,
+      "July" => 7,
+      "August" => 8,
+      "September" => 9,
+      "October" => 10,
+      "November" => 11,
+      "December" => 12,
+    }
+
+    month_number = month_name_hash[month_name]
+
+    created_same = @merchants.collection.select do |merchant|
+      (merchant.created_at).month == month_number
+    end
+
+    invoices_in_month = @invoices.collection.select do |invoice|
+      (invoice.created_at).month == month_number
+    end
+
+    invoices_per_merchant = invoices_in_month.group_by do |invoice|
+      invoice.merchant_id
+    end
+
+    single_merchant = invoices_per_merchant.select do |merchant_id, invoices|
+      invoices.length == 1
+    end
+    single_merchant = (single_merchant.values).flatten
+    single_merchant = single_merchant.map do |invoice|
+      @merchants.find_by_id(invoice.merchant_id)
+    end
+
+    sim = created_same.select do |merchant|
+      single_merchant.include?(merchant)
+    end
+
+  end
+
+  def revenue_by_merchant(merchant_id)
+
+  end
+
+  def most_sold_item_for_merchant(merchant_id)
+
+  end
+
+  def best_item_for_merchant(merchant_id)
+
   end
 
 end
