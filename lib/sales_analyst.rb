@@ -282,8 +282,8 @@ class SalesAnalyst
     end
   end
 
-  def invoice_total(invoice_ide)
-    invoice_items = @invoice_items.find_all_by_invoice_id(invoice_ide)
+  def invoice_total(invoice_id)
+    invoice_items = @invoice_items.find_all_by_invoice_id(invoice_id)
     prices = invoice_items.map do |invoice_item|
       invoice_item.unit_price * invoice_item.quantity
     end
@@ -294,16 +294,33 @@ class SalesAnalyst
   end
 
   def total_revenue_by_date(date)
+    date = Time.parse(date) if date.class != Time
+    paid_invoices_by_date = @invoices.collection.find_all do |element|
+      date.strftime("%F") == element.created_at.strftime("%F") && invoice_paid_in_full?(element.id)
+    end
     total_revenue = 0.0.to_d
-    shipped_invoices_by_date = @invoices.find_all_shipped_by_date(date)
-    shipped_invoices_by_date.each do |invoice|
+    paid_invoices_by_date.each do |invoice|
       @invoice_items.collection.each do |invoice_item|
         if invoice.id == invoice_item.invoice_id
           total_revenue += invoice_item.unit_price
         end
       end
     end
-    total_revenue
+    total_revenue.to_f
+
+  end
+
+  def merchants_with_pending_invoices
+    pending_invoices = @invoices.collection.find_all do |invoice|
+      invoice.status == :pending
+    end
+    pending_merchants = []
+    pending_invoices.each do |invoice|
+      @merchants.collection.each do |merchant|
+        pending_merchants << merchant if invoice.merchant_id == merchant.id
+      end
+    end
+    pending_merchants.uniq
   end
 
 end

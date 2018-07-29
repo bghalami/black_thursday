@@ -24,4 +24,11 @@ class TransactionRepository
       element.result.to_s.include?(result.to_s)
     end
   end
+
+  def find_all_paid_by_date(date)
+    date = Time.parse(date) if date.class != Time
+    @collection.find_all do |element|
+      date.strftime("%F") == element.created_at.strftime("%F") && element.result == :success
+    end
+  end
 end

@@ -56,4 +56,5 @@ class TransactionRepositoryTest < Minitest::Test
     assert_instance_of Array, @tx_repo.collection
     assert_instance_of Class, @tx_repo.class
   end
+
 end

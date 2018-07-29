@@ -26,7 +26,7 @@ class SalesAnalystTest < Minitest::Test
     })
     @t_3 = Transaction.new({
       :id => 8,
-      :invoice_id => 9,
+      :invoice_id => 10,
       :credit_card_number => "4242424242424244",
       :credit_card_expiration_date => "0223",
       :result => "failed",
@@ -65,7 +65,7 @@ class SalesAnalystTest < Minitest::Test
     @ii_3 = InvoiceItem.new({
       :id => 8,
       :item_id => 11,
-      :invoice_id => 9,
+      :invoice_id => 10,
       :quantity => 1,
       :unit_price => BigDecimal.new(5.99, 3),
       :created_at => Time.now,
@@ -155,8 +155,9 @@ class SalesAnalystTest < Minitest::Test
     @merchant1 = Merchant.new({id: 13, name: "Ben"})
     @merchant2 = Merchant.new({id: 14, name: "Sal"})
     @merchant3 = Merchant.new({id: 15, name: "Jesse"})
+    @merchant4 = Merchant.new({id: 8, name: "Steve"})
 
-    @merchant_array = [@merchant1, @merchant2, @merchant3]
+    @merchant_array = [@merchant1, @merchant2, @merchant3, @merchant4]
 
     @customer_array = []
 
@@ -185,7 +186,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_the_average_of_the_average_price_of_merchants
-    assert_equal BigDecimal(7.00,3), @analyst.average_average_price_per_merchant
+    assert_equal BigDecimal(5.25,3), @analyst.average_average_price_per_merchant
   end
 
   def test_it_returns_total_item_price
@@ -232,7 +233,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_day_of_the_week_hash
-    assert_equal ({6 => @invoice_array}), @analyst.day_of_the_week_hash
+    assert_equal ({0 => @invoice_array}), @analyst.day_of_the_week_hash
   end
 
   def test_it_returns_an_integer_of_counts_per_day
@@ -244,7 +245,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_array_of_top_days_of_invoices
-    assert_equal ["Saturday"], @analyst.top_days_by_invoice_count
+    assert_equal ["Sunday"], @analyst.top_days_by_invoice_count
   end
 
   def test_it_returns_the_standard_deviation_of_invoice_items_created_per_day
@@ -260,15 +261,19 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_invoice_paid_in_full_returns_true_if_status_is_success
-    assert_equal false, @analyst.invoice_paid_in_full?(9)
+    assert_equal false, @analyst.invoice_paid_in_full?(10)
   end
 
   def test_invoice_total_returns_correct_big_d
-    assert_equal BigDecimal.new(205.97, 5), @analyst.invoice_total(9)
+    assert_equal BigDecimal.new(199.98, 5), @analyst.invoice_total(9)
   end
 
   def test_it_can_return_total_revenue_by_date
-    assert_equal 21.98.to_d, @analyst.total_revenue_by_date("2018-7-28")
+    assert_equal 121.97, @analyst.total_revenue_by_date("2018-7-29")
+  end
+
+  def test_it_can_return_merchants_with_pending_invoices
+    assert_equal [@merchant4], @analyst.merchants_with_pending_invoices
   end
 
 end
