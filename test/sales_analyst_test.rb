@@ -267,4 +267,8 @@ class SalesAnalystTest < Minitest::Test
     assert_equal BigDecimal.new(205.97, 5), @analyst.invoice_total(9)
   end
 
+  def test_it_can_return_total_revenue_by_date
+    assert_equal 21.98.to_d, @analyst.total_revenue_by_date("2018-7-28")
+  end
+
 end

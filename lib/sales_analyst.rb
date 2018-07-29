@@ -294,7 +294,16 @@ class SalesAnalyst
   end
 
   def total_revenue_by_date(date)
-    invoices_by_date = @invoices.find_all_by_date(date)
+    total_revenue = 0.0.to_d
+    shipped_invoices_by_date = @invoices.find_all_shipped_by_date(date)
+    shipped_invoices_by_date.each do |invoice|
+      @invoice_items.collection.each do |invoice_item|
+        if invoice.id == invoice_item.invoice_id
+          total_revenue += invoice_item.unit_price
+        end
+      end
+    end
+    total_revenue
   end
 
 end

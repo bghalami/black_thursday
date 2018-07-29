@@ -18,10 +18,10 @@ class InvoiceRepository
     end
   end
 
-  def find_all_by_date(date)
+  def find_all_shipped_by_date(date)
     date = Time.parse(date) if date.class != Time
     @collection.find_all do |element|
-      date.strftime("%F") == element.created_at.strftime("%F")
+      date.strftime("%F") == element.created_at.strftime("%F") && element.status == :shipped
     end
   end
 
