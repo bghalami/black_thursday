@@ -269,16 +269,12 @@ class SalesAnalyst
 
   def invoice_paid_in_full?(invoice_id)
     transactions = @transactions.find_all_by_invoice_id(invoice_id)
-    if transactions == []
-      false
-    else
+    if transactions != []
       transactions.all? do |transaction|
-        if transaction.result == :success
-          true
-        else
-          false
-        end
+        transaction.result == :success
       end
+    else
+      false
     end
   end
 
@@ -291,6 +287,104 @@ class SalesAnalyst
       sum + number
     end
     total_price.round(2)
+  end
+
+  def merchants_with_only_one_item
+    items_by_merchant = @items.collection.group_by do |item|
+      item.merchant_id
+    end
+    merchants_with_one = items_by_merchant.select do |merchant_id, items|
+      items.length == 1
+    end
+    final_merchants = merchants_with_one.map do |merchant_id, items|
+      @merchants.find_by_id(merchant_id)
+    end
+  end
+
+  def merchants_with_only_one_item_registered_in_month(month_name)
+    month_name_hash = {
+      "January" => 1,
+      "February" => 2,
+      "March" => 3,
+      "April" => 4,
+      "May" => 5,
+      "June" => 6,
+      "July" => 7,
+      "August" => 8,
+      "September" => 9,
+      "October" => 10,
+      "November" => 11,
+      "December" => 12,
+    }
+
+    month_number = month_name_hash[month_name]
+
+    merchants = merchants_with_only_one_item.group_by do |merchants|
+                  (merchants.created_at).month
+                end
+    merchants[month_number]
+  end
+
+  def revenue_by_merchant(merchant_id)
+    invoices = @invoices.find_all_by_merchant_id(merchant_id)
+    invoice_item_total = invoices.map do |invoice|
+      invoice_total(invoice.id)
+    end
+    total = invoice_item_total.inject(0) do |sum, num|
+      sum += num
+    end
+    total.round(2)
+  end
+
+  def most_sold_item_for_merchant(merchant_id)
+    invoices = @invoices.find_all_by_merchant_id(merchant_id)
+    valid_transactions = invoices.select do |invoice|
+      invoice_paid_in_full?(invoice.id)
+    end
+    invoice_items = valid_transactions.map do |invoice|
+      @invoice_items.find_all_by_invoice_id(invoice.id)
+    end.flatten
+    grouped_items = invoice_items.group_by do |invoice_item|
+      invoice_item.item_id
+    end
+    qty_items = grouped_items.map do |item_id, invoice_items|
+      [item_id, invoice_items.inject(0) do |sum, invoice_item|
+        sum += invoice_item.quantity
+      end ]
+    end
+    qty = qty_items.sort_by do |item_id, quantity|
+      quantity
+    end
+    final = qty.map do |item_id, quantity|
+      if quantity == qty[-1][1]
+        @items.find_by_id(item_id)
+      else
+        next
+      end
+    end
+    final.compact
+  end
+
+  def best_item_for_merchant(merchant_id)
+    invoices = @invoices.find_all_by_merchant_id(merchant_id)
+    valid_transactions = invoices.select do |invoice|
+      invoice_paid_in_full?(invoice.id)
+    end
+    invoice_items = valid_transactions.map do |invoice|
+      @invoice_items.find_all_by_invoice_id(invoice.id)
+    end.flatten
+    grouped_items = invoice_items.group_by do |invoice_item|
+      invoice_item.item_id
+    end
+    qty_items = grouped_items.map do |item_id, invoice_items|
+      [item_id, invoice_items.inject(0) do |sum, invoice_item|
+        sum += (invoice_item.quantity * invoice_item.unit_price)
+      end ]
+    end
+    qty = qty_items.sort_by do |item_id, quantity|
+      quantity
+    end
+    @items.find_by_id(qty[-1][0])
   end
 
 end
