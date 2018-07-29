@@ -232,7 +232,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_day_of_the_week_hash
-    assert_equal ({4 => @invoice_array}), @analyst.day_of_the_week_hash
+    assert_equal ({6 => @invoice_array}), @analyst.day_of_the_week_hash
   end
 
   def test_it_returns_an_integer_of_counts_per_day
@@ -244,7 +244,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_array_of_top_days_of_invoices
-    assert_equal ["Thursday"], @analyst.top_days_by_invoice_count
+    assert_equal ["Saturday"], @analyst.top_days_by_invoice_count
   end
 
   def test_it_returns_the_standard_deviation_of_invoice_items_created_per_day
@@ -266,4 +266,5 @@ class SalesAnalystTest < Minitest::Test
   def test_invoice_total_returns_correct_big_d
     assert_equal BigDecimal.new(205.97, 5), @analyst.invoice_total(9)
   end
+
 end

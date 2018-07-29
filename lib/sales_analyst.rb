@@ -293,4 +293,8 @@ class SalesAnalyst
     total_price.round(2)
   end
 
+  def total_revenue_by_date(date)
+    invoices_by_date = @invoices.find_all_by_date(date)
+  end
+
 end

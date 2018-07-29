@@ -73,4 +73,8 @@ class InvoiceRepositoryTest < Minitest::Test
     assert_equal [], @invoice_repo.find_all_by_status("3832")
   end
 
+  def test_it_can_find_all_by_date
+    assert_equal [@invoice_1, @invoice_2, @invoice_3, @invoice_4], @invoice_repo.find_all_by_date("2018-7-28")
+  end
+
 end

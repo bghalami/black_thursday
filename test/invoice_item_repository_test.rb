@@ -11,7 +11,7 @@ class InvoiceItemRepositoryTest < Minitest::Test
       :invoice_id => 8,
       :quantity => 1,
       :unit_price => BigDecimal.new(10.99, 4),
-      :created_at => Time.now,
+      :created_at => "2012-03-27",
       :updated_at => Time.now
     })
     @ii_2 = InvoiceItem.new({
