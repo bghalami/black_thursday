@@ -395,7 +395,7 @@ class SalesAnalyst
     invoice_paid_array = @invoices.collection.map do |invoice|
       [invoice, invoice_paid_in_full?(invoice.id)]
     end
-    merchants = f.map do |invoice, pending|
+    merchants = invoice_paid_array.map do |invoice, pending|
       if pending == false
         @merchants.find_by_id(invoice.merchant_id)
       end
