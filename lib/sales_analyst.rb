@@ -270,7 +270,7 @@ class SalesAnalyst
   def invoice_paid_in_full?(invoice_id)
     transactions = @transactions.find_all_by_invoice_id(invoice_id)
     if transactions != []
-      transactions.all? do |transaction|
+      transactions.any? do |transaction|
         transaction.result == :success
       end
     else
@@ -328,8 +328,12 @@ class SalesAnalyst
   def revenue_by_merchant(merchant_id)
     invoices = @invoices.find_all_by_merchant_id(merchant_id)
     invoice_item_total = invoices.map do |invoice|
-      invoice_total(invoice.id)
-    end
+      if invoice_paid_in_full?(invoice.id)
+        invoice_total(invoice.id)
+      else
+        next
+      end
+    end.compact
     total = invoice_item_total.inject(0) do |sum, num|
       sum += num
     end
@@ -386,5 +390,33 @@ class SalesAnalyst
     end
     @items.find_by_id(qty[-1][0])
   end
+
+  def merchants_with_pending_invoices
+    invoice_paid_array = @invoices.collection.map do |invoice|
+      [invoice, invoice_paid_in_full?(invoice.id)]
+    end
+    merchants = f.map do |invoice, pending|
+      if pending == false
+        @merchants.find_by_id(invoice.merchant_id)
+      end
+    end.compact
+    merchants.uniq
+  end
+
+  def top_revenue_earners(count = 20)
+    merchant_revenue_array = @merchants.collection.map do |merchant|
+      [merchant, revenue_by_merchant(merchant.id)]
+    end
+    sorted_by_revenue = merchant_revenue_array.sort_by do |merchant, revenue|
+      revenue
+    end
+    biggest_to_smallest = sorted_by_revenue.reverse
+    sorted_merchants = biggest_to_smallest.map do |merchant, revenue|
+      merchant
+    end
+    sorted_merchants[0, count]
+  end
+
+
 
 end
