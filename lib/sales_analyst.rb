@@ -405,7 +405,6 @@ class SalesAnalyst
 
   def top_revenue_earners(count = 20)
     sorted_merchants = merchants_ranked_by_revenue
-    end
     sorted_merchants[0, count]
   end
 
