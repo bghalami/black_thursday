@@ -404,6 +404,35 @@ class SalesAnalyst
   end
 
   def top_revenue_earners(count = 20)
+    sorted_merchants = merchants_ranked_by_revenue
+    end
+    sorted_merchants[0, count]
+  end
+
+
+  def get_all_paid_invoice_items
+    @invoice_items.collection.find_all do |invoice_item|
+      invoice_paid_in_full?(invoice_item.invoice_id)
+    end
+  end
+
+  def total_revenue_by_date(date)
+    date = Time.parse(date) if date.class != Time
+    paid_invoices_by_date = @invoices.collection.find_all do |element|
+      date.strftime("%F") == element.created_at.strftime("%F") && invoice_paid_in_full?(element.id)
+    end
+    total_revenue = 0.0.to_d
+    paid_invoices_by_date.each do |invoice|
+      @invoice_items.collection.each do |invoice_item|
+        if invoice.id == invoice_item.invoice_id
+          total_revenue += invoice_item.unit_price * invoice_item.quantity
+        end
+      end
+    end
+    total_revenue
+  end
+
+  def merchants_ranked_by_revenue
     merchant_revenue_array = @merchants.collection.map do |merchant|
       [merchant, revenue_by_merchant(merchant.id)]
     end
@@ -414,9 +443,5 @@ class SalesAnalyst
     sorted_merchants = biggest_to_smallest.map do |merchant, revenue|
       merchant
     end
-    sorted_merchants[0, count]
   end
-
-
-
 end

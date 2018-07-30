@@ -232,7 +232,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_day_of_the_week_hash
-    assert_equal ({6 => @invoice_array}), @analyst.day_of_the_week_hash
+    assert_equal ({0 => @invoice_array}), @analyst.day_of_the_week_hash
   end
 
   def test_it_returns_an_integer_of_counts_per_day
@@ -244,7 +244,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_array_of_top_days_of_invoices
-    assert_equal ["Saturday"], @analyst.top_days_by_invoice_count
+    assert_equal ["Sunday"], @analyst.top_days_by_invoice_count
   end
 
   def test_it_returns_the_standard_deviation_of_invoice_items_created_per_day
@@ -260,7 +260,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_invoice_paid_in_full_returns_true_if_status_is_success
-    assert_equal false, @analyst.invoice_paid_in_full?(9)
+    assert_equal true, @analyst.invoice_paid_in_full?(9)
   end
 
   def test_invoice_total_returns_correct_big_d
@@ -286,6 +286,9 @@ class SalesAnalystTest < Minitest::Test
   def test_it_returns_best_item_for_merchant_per_revenue
     skip
     assert_equal [], @analyst.best_item_for_merchant(13)
+  end
 
+  def test_it_can_return_total_revenue_by_date
+    assert_equal 326.86.to_d, @analyst.total_revenue_by_date("2018-7-29")
   end
 end
