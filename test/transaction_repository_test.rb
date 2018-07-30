@@ -56,4 +56,12 @@ class TransactionRepositoryTest < Minitest::Test
     assert_instance_of Array, @tx_repo.collection
     assert_instance_of Class, @tx_repo.class
   end
+
+  def test_it_can_find_all_by_credit_card_number
+    assert_equal [@t_4], @tx_repo.find_all_by_credit_card_number("4242424242424245")
+  end
+
+  def test_it_can_find_all_by_result
+    assert_equal [@t_1, @t_2, @t_4], @tx_repo.find_all_by_result("success") 
+  end
 end
