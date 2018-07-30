@@ -286,7 +286,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_returns_best_item_for_merchant_per_revenue
-    assert_equal nil, @analyst.best_item_for_merchant(13)
+    refute @analyst.best_item_for_merchant(13)
   end
 
   def test_it_can_return_total_revenue_by_date
