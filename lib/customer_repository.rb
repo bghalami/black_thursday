@@ -5,7 +5,8 @@ class CustomerRepository
 
   include RepositoryHelper
 
-  attr_reader :collection
+  attr_reader :collection,
+              :class
 
   def initialize(customers_array = [])
       @collection = customers_array

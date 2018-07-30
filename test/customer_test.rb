@@ -6,7 +6,7 @@ class MerchantTest < Minitest::Test
     @customer = Customer.new({
       :id   => 20,
       :first_name => "Mark",
-      :last_name => "Twain"
+      :last_name => "Twain",
     })
   end
 
