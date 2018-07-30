@@ -443,4 +443,5 @@ class SalesAnalyst
       merchant
     end
   end
+
 end

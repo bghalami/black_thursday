@@ -5,9 +5,10 @@ require_relative '../lib/customer_repository'
 require_relative '../lib/transaction_repository'
 require_relative '../lib/invoice_item_repository'
 require_relative '../lib/sales_analyst'
+require_relative '../lib/file_loader'
 require 'csv'
 
-class SalesEngine
+class SalesEngine < FileLoader
 
   attr_accessor :items,
                 :merchants,
@@ -15,6 +16,22 @@ class SalesEngine
                 :customers,
                 :invoice_items,
                 :transactions
+
+    def initialize(
+      items_array        = [],
+      merchants_array    = [],
+      invoice_array      = [],
+      customers_array    = [],
+      transactions_array = [],
+      invoice_items_array= []
+    )
+      @items     = ItemRepository.new(items_array)
+      @merchants = MerchantRepository.new(merchants_array)
+      @invoices  = InvoiceRepository.new(invoice_array)
+      @customers = CustomerRepository.new(customers_array)
+      @transactions = TransactionRepository.new(transactions_array)
+      @invoice_items = InvoiceItemRepository.new(invoice_items_array)
+  end
 
   def self.from_csv(hash)
     items_array        = []
@@ -55,31 +72,6 @@ class SalesEngine
       transactions_array,
       invoice_items_array
     )
-  end
-
-  def self.load_csv(location, class_name)
-    csv_array = []
-    CSV.foreach(location, headers: true, header_converters: :symbol) do |row|
-      csv_array << class_name.new(row)
-    end
-    csv_array
-  end
-
-  def initialize(
-   items_array        = [],
-   merchants_array    = [],
-   invoice_array      = [],
-   customers_array    = [],
-   transactions_array = [],
-   invoice_items_array= []
-  )
-
-    @items     = ItemRepository.new(items_array)
-    @merchants = MerchantRepository.new(merchants_array)
-    @invoices  = InvoiceRepository.new(invoice_array)
-    @customers = CustomerRepository.new(customers_array)
-    @transactions = TransactionRepository.new(transactions_array)
-    @invoice_items = InvoiceItemRepository.new(invoice_items_array)
   end
 
   def analyst
