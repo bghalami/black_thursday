@@ -311,11 +311,10 @@ class SalesAnalyst
       "November" => 11,
       "December" => 12,
     }
-    month_number = month_name_hash[month_name]
     merchants = merchants_with_only_one_item.group_by do |merchants|
       (merchants.created_at).month
     end
-    merchants[month_number]
+    merchants[month_name_hash[month_name]]
   end
 
   def revenue_by_merchant(merchant_id)
@@ -432,6 +431,10 @@ class SalesAnalyst
     paid_invoices_by_date = @invoices.collection.find_all do |element|
       date.strftime("%F") == element.created_at.strftime("%F") && invoice_paid_in_full?(element.id)
     end
+    total_revenue(paid_invoices_by_date)
+  end
+
+  def total_revenue(paid_invoices_by_date)
     total_revenue = 0.0.to_d
     paid_invoices_by_date.each do |invoice|
       @invoice_items.collection.each do |invoice_item|
@@ -455,5 +458,4 @@ class SalesAnalyst
       merchant
     end
   end
-
 end
