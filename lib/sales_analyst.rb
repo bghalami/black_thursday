@@ -316,12 +316,10 @@ class SalesAnalyst
       "November" => 11,
       "December" => 12,
     }
-
     month_number = month_name_hash[month_name]
-
     merchants = merchants_with_only_one_item.group_by do |merchants|
-                  (merchants.created_at).month
-                end
+      (merchants.created_at).month
+    end
     merchants[month_number]
   end
 
@@ -330,8 +328,6 @@ class SalesAnalyst
     invoice_item_total = invoices.map do |invoice|
       if invoice_paid_in_full?(invoice.id)
         invoice_total(invoice.id)
-      else
-        next
       end
     end.compact
     total = invoice_item_total.inject(0) do |sum, num|
@@ -342,54 +338,75 @@ class SalesAnalyst
 
   def most_sold_item_for_merchant(merchant_id)
     invoices = @invoices.find_all_by_merchant_id(merchant_id)
-    valid_transactions = invoices.select do |invoice|
-      invoice_paid_in_full?(invoice.id)
-    end
-    invoice_items = valid_transactions.map do |invoice|
-      @invoice_items.find_all_by_invoice_id(invoice.id)
-    end.flatten
+    valid_transactions = valid_transactions(invoices)
+    invoice_items = valid_invoice_items(valid_transactions)
     grouped_items = invoice_items.group_by do |invoice_item|
       invoice_item.item_id
     end
-    qty_items = grouped_items.map do |item_id, invoice_items|
-      [item_id, invoice_items.inject(0) do |sum, invoice_item|
-        sum += invoice_item.quantity
-      end ]
-    end
-    qty = qty_items.sort_by do |item_id, quantity|
+    qty_of_items = quantities_of_items(grouped_items)
+    qty = qty_of_items.sort_by do |item_id, quantity|
       quantity
     end
-    final = qty.map do |item_id, quantity|
+    final = get_quantity_of_items(qty)
+    final.compact
+  end
+
+  def get_quantity_of_items(qty)
+    qty.map do |item_id, quantity|
       if quantity == qty[-1][1]
         @items.find_by_id(item_id)
       else
         next
       end
     end
-    final.compact
   end
 
   def best_item_for_merchant(merchant_id)
     invoices = @invoices.find_all_by_merchant_id(merchant_id)
-    valid_transactions = invoices.select do |invoice|
-      invoice_paid_in_full?(invoice.id)
-    end
-    invoice_items = valid_transactions.map do |invoice|
-      @invoice_items.find_all_by_invoice_id(invoice.id)
-    end.flatten
-    grouped_items = invoice_items.group_by do |invoice_item|
-      invoice_item.item_id
-    end
-    qty_items = grouped_items.map do |item_id, invoice_items|
-      [item_id, invoice_items.inject(0) do |sum, invoice_item|
-        sum += (invoice_item.quantity * invoice_item.unit_price)
-      end ]
-    end
-    qty = qty_items.sort_by do |item_id, quantity|
+    valid_transactions = valid_transactions(invoices)
+    validated_invoice_items = valid_invoice_items(valid_transactions)
+    grouped_items = group_valid_invoice_items(validated_invoice_items)
+    quantity_of_items = quantity_of_items(grouped_items)
+    qty = quantity_of_items.sort_by do |item_id, quantity|
       quantity
     end
     @items.find_by_id(qty[-1][0])
   end
+  #--Begin Helper methods
+  def valid_transactions(invoices)
+    invoices.select do |invoice|
+      invoice_paid_in_full?(invoice.id)
+    end
+  end
+
+  def valid_invoice_items(valid_transactions)
+    invoice_items = valid_transactions.map do |invoice|
+      @invoice_items.find_all_by_invoice_id(invoice.id)
+    end.flatten
+  end
+
+  def group_valid_invoice_items(valid_invoice_items)
+    valid_invoice_items.group_by do |invoice_item|
+      invoice_item.item_id
+    end
+  end
+
+  def quantity_of_items(grouped_items)
+    grouped_items.map do |item_id, invoice_items|
+      [item_id, invoice_items.inject(0) do |sum, invoice_item|
+        sum += (invoice_item.quantity * invoice_item.unit_price)
+      end ]
+    end
+  end
+
+  def quantities_of_items(grouped_items)
+    grouped_items.map do |item_id, invoice_items|
+      [item_id, invoice_items.inject(0) do |sum, invoice_item|
+        sum += invoice_item.quantity
+      end ]
+    end
+  end
+  #--End of Helper methods
 
   def merchants_with_pending_invoices
     invoice_paid_array = @invoices.collection.map do |invoice|
