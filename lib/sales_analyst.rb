@@ -349,8 +349,6 @@ class SalesAnalyst
     qty.map do |item_id, quantity|
       if quantity == qty[-1][1]
         @items.find_by_id(item_id)
-      else
-        next
       end
     end
   end
@@ -366,7 +364,7 @@ class SalesAnalyst
     end
     @items.find_by_id(qty[-1][0])
   end
-  
+
   #--Begin Helper methods
   def valid_transactions(invoices)
     invoices.select do |invoice|
