@@ -223,23 +223,18 @@ class SalesAnalyst
   end
 
   def weekify(day_of_week_int)
-    if day_of_week_int == 0
-      "Sunday"
-    elsif day_of_week_int == 1
-      "Monday"
-    elsif day_of_week_int == 2
-      "Tuesday"
-    elsif day_of_week_int == 3
-      "Wednesday"
-    elsif day_of_week_int == 4
-      "Thursday"
-    elsif day_of_week_int == 5
-      "Friday"
-    elsif day_of_week_int == 6
-      "Saturday"
-    else
-      ""
-    end
+    weekday_hash = {
+      0 => "Sunday",
+      1 => "Monday",
+      2 => "Tuesday",
+      3 => "Wednesday",
+      4 => "Thursday",
+      5 => "Friday",
+      6 => "Saturday",
+      7 => "Sunday"
+    }
+    weekday_hash.default("")
+    weekday_hash[day_of_week_int]
   end
 
   def top_days_by_invoice_count
