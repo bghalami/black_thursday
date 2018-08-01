@@ -274,7 +274,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_return_array_of_merchants_with_only_one_invoice_that_month
-    assert_equal 1, @analyst.merchants_with_only_one_item_registered_in_month("July").count
+    assert_equal 1, @analyst.merchants_with_only_one_item_registered_in_month(Time.now.strftime("%B")).count
   end
 
   def test_it_can_return_the_total_revenue_of_a_merchant
