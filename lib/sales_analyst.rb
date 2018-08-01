@@ -1,5 +1,6 @@
 require 'pry'
 
+# No one frikin likes you
 class SalesAnalyst
 
   attr_reader :items,
@@ -9,7 +10,13 @@ class SalesAnalyst
               :invoice_items,
               :transactions
 
-  def initialize(items, merchants, invoices, customers, transactions, invoice_items)
+  def initialize( items,
+                  merchants,
+                  invoices,
+                  customers,
+                  transactions,
+                  invoice_items
+      )
     @items = items
     @merchants = merchants
     @invoices = invoices
@@ -25,14 +32,14 @@ class SalesAnalyst
   end
 
   def item_count_by_merchant_id(item_hash_by_merchant_id)
-    item_hash_by_merchant_id.map do |id, items|
+    item_hash_by_merchant_id.map do |_id, items|
       items.count.to_f
     end
   end
 
   def total_items(item_count_by_merchant_array)
     item_count_by_merchant_array.inject(0) do |sum, number|
-      sum += number
+      sum + number
     end
   end
 
@@ -43,8 +50,8 @@ class SalesAnalyst
   end
 
   def std_dev_total(abs_differences)
-    total = abs_differences.inject(0) do |sum, number|
-      sum += number
+    abs_differences.inject(0) do |sum, number|
+      sum + number
     end
   end
 
@@ -75,7 +82,7 @@ class SalesAnalyst
     split = @items.find_all_by_merchant_id(merchant_id)
 
     sum_of_prices = split.inject(0) do |sum, item|
-      sum += (item.unit_price)
+      sum + (item.unit_price)
     end
 
     (sum_of_prices / split.count).round(2)
@@ -83,18 +90,18 @@ class SalesAnalyst
 
   def average_average_price_per_merchant
     merchant_hash = items_by_merchant_id(@items.collection)
-    average_merchant_average = merchant_hash.map do |merchant_id, items|
+    average_merchant_average = merchant_hash.map do |merchant_id, _items|
         average_item_price_for_merchant(merchant_id)
     end
     averages_summed = average_merchant_average.inject(0) do |sum, bigd|
-      sum += bigd
+      sum + bigd
     end
     (averages_summed / @merchants.collection.count).round(2)
   end
 
   def total_item_price
     @items.collection.inject(0) do |sum, item|
-      sum += item.unit_price
+      sum + item.unit_price
     end
   end
 
@@ -136,14 +143,14 @@ class SalesAnalyst
   end
 
   def invoice_count_by_merchant_id(invoice_hash)
-    invoice_hash.map do |id, invoices|
+    invoice_hash.map do |_id, invoices|
       invoices.count.to_f
     end
   end
 
   def total_invoices(invoice_count_by_merchant_array)
     invoice_count_by_merchant_array.inject(0) do |sum, number|
-      sum += number
+      sum + number
     end
   end
 
@@ -187,25 +194,19 @@ class SalesAnalyst
   end
 
   def count_per_day
-    day_of_the_week_hash.map do |day, invoices|
+    day_of_the_week_hash.map do |_day, invoices|
       invoices.count
     end
   end
 
   def invoice_count_per_day_summed
     count_per_day.inject(0) do |sum, count|
-      sum += count
+      sum + count
     end
   end
 
   def average_number_of_invoices_created_per_day
     (invoice_count_per_day_summed.to_f / 7).round(2)
-  end
-
-  def top_days_by_invoice_count
-    count_per_day = day_of_the_week_hash.map do |day, invoices|
-      invoices.count
-    end
   end
 
   def invoice_per_day_standard_deviation
@@ -282,10 +283,10 @@ class SalesAnalyst
     items_by_merchant = @items.collection.group_by do |item|
       item.merchant_id
     end
-    merchants_with_one = items_by_merchant.select do |merchant_id, items|
+    merchants_with_one = items_by_merchant.select do |_merchant_id, items|
       items.length == 1
     end
-    final_merchants = merchants_with_one.map do |merchant_id, items|
+    merchants_with_one.map do |merchant_id, _items|
       @merchants.find_by_id(merchant_id)
     end
   end
@@ -319,7 +320,7 @@ class SalesAnalyst
       end
     end.compact
     total = invoice_item_total.inject(0) do |sum, num|
-      sum += num
+      sum + num
     end
     total.round(2)
   end
@@ -332,7 +333,7 @@ class SalesAnalyst
       invoice_item.item_id
     end
     qty_of_items = quantities_of_items(grouped_items)
-    qty = qty_of_items.sort_by do |item_id, quantity|
+    qty = qty_of_items.sort_by do |_item_id, quantity|
       quantity
     end
     final = get_quantity_of_items(qty)
@@ -353,7 +354,7 @@ class SalesAnalyst
     validated_invoice_items = valid_invoice_items(valid_transactions)
     grouped_items = group_valid_invoice_items(validated_invoice_items)
     quantity_of_items = quantity_of_items(grouped_items)
-    qty = quantity_of_items.sort_by do |item_id, quantity|
+    qty = quantity_of_items.sort_by do |_item_id, quantity|
       quantity
     end
     @items.find_by_id(qty[-1][0])
@@ -367,7 +368,7 @@ class SalesAnalyst
   end
 
   def valid_invoice_items(valid_transactions)
-    invoice_items = valid_transactions.map do |invoice|
+    valid_transactions.map do |invoice|
       @invoice_items.find_all_by_invoice_id(invoice.id)
     end.flatten
   end
@@ -381,7 +382,7 @@ class SalesAnalyst
   def quantity_of_items(grouped_items)
     grouped_items.map do |item_id, invoice_items|
       [item_id, invoice_items.inject(0) do |sum, invoice_item|
-        sum += (invoice_item.quantity * invoice_item.unit_price)
+        sum + (invoice_item.quantity * invoice_item.unit_price)
       end ]
     end
   end
@@ -389,7 +390,7 @@ class SalesAnalyst
   def quantities_of_items(grouped_items)
     grouped_items.map do |item_id, invoice_items|
       [item_id, invoice_items.inject(0) do |sum, invoice_item|
-        sum += invoice_item.quantity
+        sum + invoice_item.quantity
       end ]
     end
   end
@@ -443,11 +444,11 @@ class SalesAnalyst
     merchant_revenue_array = @merchants.collection.map do |merchant|
       [merchant, revenue_by_merchant(merchant.id)]
     end
-    sorted_by_revenue = merchant_revenue_array.sort_by do |merchant, revenue|
+    sorted_by_revenue = merchant_revenue_array.sort_by do |_merchant, revenue|
       revenue
     end
     biggest_to_smallest = sorted_by_revenue.reverse
-    sorted_merchants = biggest_to_smallest.map do |merchant, revenue|
+    biggest_to_smallest.map do |merchant, _revenue|
       merchant
     end
   end
