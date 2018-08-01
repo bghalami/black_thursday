@@ -42,6 +42,12 @@ class SalesAnalyst
     (total_items(item_count).to_f / item_count.length).round(2)
   end
 
+  def std_dev_total(abs_differences)
+    total = abs_differences.inject(0) do |sum, number|
+      sum += number
+    end
+  end
+
   def average_items_per_merchant_standard_deviation
     average_items = average_items_per_merchant
     merchant_hash = items_by_merchant_id(@items.collection)
@@ -49,10 +55,7 @@ class SalesAnalyst
     abs_differences = item_count.map do |count|
       ((count - average_items).abs) ** 2.0
     end
-    total = abs_differences.inject(0) do |sum, number|
-      sum += number
-    end
-    (Math.sqrt(total / (item_count.length - 1))).round(2)
+    (Math.sqrt(std_dev_total(abs_differences) / (item_count.length - 1))).round(2)
   end
 
   def merchants_with_high_item_count
@@ -107,10 +110,7 @@ class SalesAnalyst
     abs_differences = @items.collection.map do |item|
         ((item.unit_price - average_price).abs) ** 2.0
     end
-    total = abs_differences.inject(0) do |sum, number|
-      sum += number
-    end
-    (Math.sqrt(total / (number_of_items - 1))).round(2)
+    (Math.sqrt(std_dev_total(abs_differences) / (number_of_items - 1))).round(2)
   end
 
   def golden_items
@@ -153,10 +153,7 @@ class SalesAnalyst
     abs_differences = invoice_count.map do |count|
         ((count - average_invoices_per_merchant).abs) ** 2.0
     end
-    total = abs_differences.inject(0) do |sum, number|
-      sum += number
-    end
-    (Math.sqrt(total / (invoice_count.count - 1))).round(2)
+    (Math.sqrt(std_dev_total(abs_differences) / (invoice_count.count - 1))).round(2)
   end
 
   def top_merchants_by_invoice_count
@@ -216,10 +213,7 @@ class SalesAnalyst
     abs_differences = count_per_day.map do |count|
         ((count - average).abs) ** 2.0
     end
-    total = abs_differences.inject(0) do |sum, number|
-      sum += number
-    end
-    (Math.sqrt(total / 6)).round(2)
+    (Math.sqrt(std_dev_total(abs_differences) / 6)).round(2)
   end
 
   def weekify(day_of_week_int)
